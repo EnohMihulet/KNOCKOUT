@@ -4,7 +4,7 @@
 #include <array>
 #include <vector>
 
-#include "../helpers/game.h"
+#include "../helpers/uiHelper.h"
 #include "../state.h"
 
 namespace knockOut {

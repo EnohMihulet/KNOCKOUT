@@ -8,25 +8,25 @@
 #include <iostream>
 #include <ostream>
 #include "../../include/states/mainMenuState.h"
-#include "../../include/stateStack.h"
-\
+#include "../../include/game.h"
+
 namespace knockOut {
 
     MainMenuState::MainMenuState(StateStack& stack, Context context)
     : State(stack, context) {
-        _background.setTexture(_context.textures->get(Background1));
+        _background.setTexture(_context.textures->get(TextureID::Background1));
 
-        _title.setFont(_context.fonts->get(MainFont));
+        _title.setFont(_context.fonts->get(FontID::MainFont));
         _title.setFillColor(sf::Color::Blue);
         _title.setString(TITLE);
 
-        _titleShadow.setFont(_context.fonts->get(MainFont));
+        _titleShadow.setFont(_context.fonts->get(FontID::MainFont));
         _titleShadow.setFillColor(sf::Color::White);
         _titleShadow.setString(TITLE);
 
         for (size_t i = 0; i < BUTTON_TEXT.size(); ++i) {
             Button button;
-            button.text.setFont(_context.fonts->get(MainFont));
+            button.text.setFont(_context.fonts->get(FontID::MainFont));
             button.text.setFillColor(sf::Color::Blue);
             button.text.setString(BUTTON_TEXT[i]);
 
@@ -73,7 +73,7 @@ namespace knockOut {
 
     void MainMenuState::handleEvent(const sf::Event& event) {
         if (event.type == sf::Event::Resized) {
-            std::cout << _context._window->getSize().x << " " << _context._window->getSize().y << std::endl;
+            std::cout << _context.window->getSize().x << " " << _context.window->getSize().y << std::endl;
         }
 
         if (event.type == sf::Event::KeyPressed) {
@@ -97,7 +97,7 @@ namespace knockOut {
                     requestPush(StateID::Options);
                     return;
                 } else if (_selectedIndex == 3) {
-                    _context._window->close();
+                    _context.window->close();
                 } 
             }
         }
@@ -106,14 +106,14 @@ namespace knockOut {
             auto& b = _buttons[i];
 
             if (event.type == sf::Event::MouseMoved) {
-                sf::Vector2f mousePos = _context._window->mapPixelToCoords(sf::Mouse::getPosition(*_context._window));
+                sf::Vector2f mousePos = _context.window->mapPixelToCoords(sf::Mouse::getPosition(*_context.window));
                 if (b.rect.getGlobalBounds().contains(mousePos)) {
                     _selectedIndex = i;
                     updateLayout();
                 }
             }
 
-            if (b.isClicked(_context._window, event)) {
+            if (b.isClicked(_context.window, event)) {
                 if (b.text.getString() == "FIGHT") {
                     requestClear();
                     requestPush(StateID::SelectOpponent);
@@ -124,7 +124,7 @@ namespace knockOut {
                     requestClear();
                     requestPush(StateID::Options);
                 } else if (b.text.getString() == "QUIT") {
-                    _context._window->close();
+                    _context.window->close();
                 }   
             }
         }
@@ -142,10 +142,10 @@ namespace knockOut {
 
             TextureID id;
             switch (_bgIndex) {
-                case 0: id = Background1; break;
-                case 1: id = Background2; break;
-                case 2: id = Background3; break;
-                default: id = Background1; break;
+                case 0: id = TextureID::Background1; break;
+                case 1: id = TextureID::Background2; break;
+                case 2: id = TextureID::Background3; break;
+                default: id = TextureID::Background1; break;
             }
 
             _background.setTexture(_context.textures->get(id));
@@ -157,9 +157,9 @@ namespace knockOut {
     }
 
     void MainMenuState::draw() {
-        _context._window->draw(_background);
-        _context._window->draw(_titleShadow);
-        _context._window->draw(_title);
-        for (Button& b : _buttons) b.draw(_context._window);
+        _context.window->draw(_background);
+        _context.window->draw(_titleShadow);
+        _context.window->draw(_title);
+        for (Button& b : _buttons) b.draw(_context.window);
     }
 }

@@ -4,31 +4,31 @@
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Keyboard.hpp>
-
 #include "../../include/states/selectOpponentState.h"
 #include "../../include/states/mainMenuState.h"
+#include "../../include/game.h"
 
 namespace knockOut {
 
     SelectOpponentState::SelectOpponentState(StateStack& stack, Context context) 
         : State(stack, context) {
-            _background.setTexture(_context.textures->get(Background1));
+            _background.setTexture(_context.textures->get(TextureID::Background1));
 
-            _title.setFont(_context.fonts->get(MainFont));
+            _title.setFont(_context.fonts->get(FontID::MainFont));
             _title.setFillColor(sf::Color::Blue);
             _title.setString("FIGHT");
 
-            _titleShadow.setFont(_context.fonts->get(MainFont));
+            _titleShadow.setFont(_context.fonts->get(FontID::MainFont));
             _titleShadow.setFillColor(sf::Color::White);
             _titleShadow.setString("FIGHT");
 
-            _backButton.text.setFont(_context.fonts->get(MainFont));
+            _backButton.text.setFont(_context.fonts->get(FontID::MainFont));
             _backButton.text.setFillColor(sf::Color::Blue);
             _backButton.text.setString("BACK");
 
             for (size_t i = 0; i < OPPONENT_NAMES.size(); ++i) {
                 Button button;
-                button.text.setFont(_context.fonts->get(MainFont));
+                button.text.setFont(_context.fonts->get(FontID::MainFont));
                 button.text.setFillColor(sf::Color::Blue);
                 button.text.setString(OPPONENT_NAMES[i]);
 
@@ -125,20 +125,22 @@ namespace knockOut {
                     requestPush(StateID::MainMenu);
                 }
                 else {
+                    
                     requestClear();
+                    *_context.selectedOpponent = (CharacterType) (_selectedIndex + 1);
                     requestPush(StateID::Fight);
                 }
             }
         }
         if (event.type == sf::Event::MouseMoved || event.type == sf::Event::MouseButtonPressed) {
-            sf::Vector2f mousePos = _context._window->mapPixelToCoords(sf::Mouse::getPosition(*_context._window));
+            sf::Vector2f mousePos = _context.window->mapPixelToCoords(sf::Mouse::getPosition(*_context.window));
             if (_backButton.rect.getGlobalBounds().contains(mousePos)) {
                 _backButton.text.setFillColor(sf::Color::White);
             } else {
                 _backButton.text.setFillColor(sf::Color::Blue);
             }
 
-            if (_backButton.isClicked(_context._window, event)) {
+            if (_backButton.isClicked(_context.window, event)) {
                 requestClear();
                 requestPush(StateID::MainMenu);
             }
@@ -151,8 +153,9 @@ namespace knockOut {
                     updateLayout();
                 }
 
-                if (b.isClicked(_context._window, event)) {
+                if (b.isClicked(_context.window, event)) {
                     requestClear();
+                    *_context.selectedOpponent = (CharacterType) (_selectedIndex + 1);
                     requestPush(StateID::Fight);
                 }
             }
@@ -171,10 +174,10 @@ namespace knockOut {
 
             TextureID id;
             switch (_bgIndex) {
-                case 0: id = Background1; break;
-                case 1: id = Background2; break;
-                case 2: id = Background3; break;
-                default: id = Background1; break;
+                case 0: id = TextureID::Background1; break;
+                case 1: id = TextureID::Background2; break;
+                case 2: id = TextureID::Background3; break;
+                default: id = TextureID::Background1; break;
             }
 
             _background.setTexture(_context.textures->get(id));
@@ -186,10 +189,10 @@ namespace knockOut {
     }
 
     void SelectOpponentState::draw() {
-        _context._window->draw(_background);
-        _backButton.draw(_context._window);
-        _context._window->draw(_titleShadow);
-        _context._window->draw(_title);
-        for (auto& b : _opponents) b.draw(_context._window);
+        _context.window->draw(_background);
+        _backButton.draw(_context.window);
+        _context.window->draw(_titleShadow);
+        _context.window->draw(_title);
+        for (auto& b : _opponents) b.draw(_context.window);
     }
 };

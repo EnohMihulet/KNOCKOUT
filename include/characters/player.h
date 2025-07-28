@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../state.h"
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/System/Time.hpp>
+#include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Window/Touch.hpp>
@@ -12,93 +12,75 @@
 #include <optional>
 #include <queue>
 #include <vector>
+#include "../state.h"
+#include "../helpers/characterDataManager.h"
 
 namespace knockOut {
 
     const int SHEET_COLS = 9;
     const int SHEET_ROWS = 3;
-    const int MOVE_COUNT = 11;
+    const sf::Vector2f PLAYER_START_POS = { 350, 350};
+    const sf::Time INPUT_COOLDOWN_TIME = sf::seconds(.05f);
 
-    enum PlayerState {
-        idle, jab, leftHook, rightHook, upperCut,
-        bodyBlock, headBlock, leftDodge, rightDodge,
-        leftHit, rightHit
+    static const std::map<sf::Keyboard::Key, CharacterState> INPUT_STATE_MAP = {
+        { sf::Keyboard::A, CharacterState::lDodge   },
+        { sf::Keyboard::D, CharacterState::rDodge  },
+        { sf::Keyboard::W, CharacterState::headBlock   },
+        { sf::Keyboard::S, CharacterState::bodyBlock   },
+        { sf::Keyboard::H, CharacterState::lHook    },
+        { sf::Keyboard::J, CharacterState::rJab         },
+        { sf::Keyboard::K, CharacterState::upperCut    },
+        { sf::Keyboard::L, CharacterState::rHook   }
     };
-
-    struct MoveDef {PlayerState state; int row, startCol, count; float frameTime; };
-    static constexpr MoveDef MOVE_DEFS[MOVE_COUNT] = {
-        {PlayerState::idle, 0, 0, 2, .25},
-        {PlayerState::jab, 0, 3, 2, .10},
-        {PlayerState::bodyBlock, 0, 5, 1, .50},
-        {PlayerState::headBlock, 0, 6, 1, .50},
-        {PlayerState::leftDodge, 0, 7, 1, .50},        
-        {PlayerState::rightDodge, 0, 8, 1, .50},
-        {PlayerState::leftHook, 1, 0, 2, .15},
-        {PlayerState::rightHook, 1, 2, 2, .15},
-        {PlayerState::upperCut, 1, 4, 3, .20},
-        {PlayerState::rightHit, 1, 7, 1, .75},
-        {PlayerState::leftHit, 1, 8, 1, .75},
-    };
-
-    static const std::map<sf::Keyboard::Key, PlayerState> INPUT_STATE_MAP = {
-        { sf::Keyboard::A, PlayerState::leftDodge   },
-        { sf::Keyboard::D, PlayerState::rightDodge  },
-        { sf::Keyboard::W, PlayerState::headBlock   },
-        { sf::Keyboard::S, PlayerState::bodyBlock   },
-        { sf::Keyboard::H, PlayerState::leftHook    },
-        { sf::Keyboard::J, PlayerState::jab         },
-        { sf::Keyboard::K, PlayerState::upperCut    },
-        { sf::Keyboard::L, PlayerState::rightHook   }
-    };
-
 
     struct Animation {
-        std::vector<sf::IntRect> frames;
-        sf::Time frameTime;
+        std::vector<sf::IntRect> animationFrames;
+        std::vector<int> animationTimes;
         bool looping;
         int current = 0;
-        sf::Time elapsed = sf::Time::Zero;
+        int framesElapsed = 0;
         bool playing = false;
 
         void play(bool loop = false) {
             looping = loop;
             playing = true;
             current = 0;
-            elapsed = sf::Time::Zero;
+            framesElapsed = 0;
         }
 
-        void update(sf::Time dt) {
+        void update() {
             if (!playing) return;
-            elapsed += dt;
-            if (elapsed >= frameTime) {
-                elapsed -= frameTime;
+            ++framesElapsed;
+            if (framesElapsed >= animationTimes[current]) {
+                framesElapsed = 0;
                 current++;
-                if (current >= (int) frames.size()) {
+                if (current >= (int) animationFrames.size()) {
                     if (looping) current = 0;
                     else playing = false;
                 }
             }
         }
 
-        const sf::IntRect& frame() { return frames[current]; }
+        const sf::IntRect& frame() { return animationFrames[current]; }
     };
 
     class Player {
-        public:
-            Player(State::Context context);
+    public:
+        Player(State::Context context);
 
-            void handleEvent(const sf::Event& event);
-            void update(const sf::Time dt);
-            void draw();
+        void handleEvent(const sf::Event& event);
+        void update(const sf::Time dt);
+        void draw();
 
-        private:
-            sf::Sprite _playerSprite;
-            std::array<Animation, MOVE_COUNT> _animations;
-            PlayerState _state = PlayerState::idle;
-            std::optional<PlayerState> _bufferedMove;
+    private:
+        sf::Sprite _playerSprite;
+        std::array<Animation, CHARACTER_STATE_NUMBER> _animations;
+        CharacterState _state = CharacterState::idle;
+        std::optional<CharacterState> _bufferedMove;
+        sf::Time _inputCooldown = sf::Time::Zero;
 
-            State::Context _context;
+        State::Context _context;
 
-            void loadLookupTable();
+        void loadLookupTable();
     };
 }

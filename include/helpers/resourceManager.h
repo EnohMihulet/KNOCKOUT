@@ -7,15 +7,16 @@
 
 namespace knockOut {
 
-    enum TextureID {
+    enum class TextureID {
         Background1,
         Background2,
         Background3,
         BaldBull,
+        GlassJoe,
         PlayerTexture
     };
 
-    enum FontID {
+    enum class FontID {
         MainFont
     };
 

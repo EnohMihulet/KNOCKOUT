@@ -1,22 +1,21 @@
 #pragma once
 
-
 #include <SFML/Window/Event.hpp>
 #include <SFML/System/Time.hpp>
 #include <functional>
 #include <vector>
 #include <map>
+#include <memory>
 #include "state.h"
 
 namespace knockOut {
-
-    class State;
-    enum class StateID;
-
+    // Forward declarations
+    class Game;
+    
     class StateStack {
     public:
-    
         enum Action { Push, Pop, Clear };
+
         explicit StateStack(State::Context context)
         : _context(context) {}
 
@@ -24,26 +23,27 @@ namespace knockOut {
         void registerState(StateID id) {
             _factories[id] = [this](){ return State::Ptr(new StateType(*this, _context)); };
         };
-
+        
         void registerStates();
-
-        void handleEvent(sf::Event& event);
+        void handleEvent(const sf::Event& event);
         void update(sf::Time dt);
         void draw();
-
-        void pushState(StateID id) { _pending.push_back({Push, id}); };
-        void popState() { _pending.push_back({Pop, StateID::None}); };
-        void clearStates() { _pending.push_back({Clear, StateID::None}); };
-
+        
+        void pushState(StateID id);
+        void popState();
+        void clearStates();
+        
+        bool isEmpty() const;
+        
     private:
-
         struct PendingChange { 
             Action action;
             StateID stateID; 
         };
-
+        
         void applyPendingChanges();
-
+        State::Ptr createState(StateID id);
+        
         std::vector<State::Ptr> _stack;
         std::vector<PendingChange> _pending;
         std::map<StateID, std::function<State::Ptr()>> _factories;

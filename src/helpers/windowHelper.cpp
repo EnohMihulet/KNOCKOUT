@@ -2,7 +2,7 @@
 #include <cmath>
 
 #include "../../include/helpers/windowHelper.h"
-#include "../../include/helpers/game.h"
+#include "../../include/game.h"
 
 
 namespace knockOut {

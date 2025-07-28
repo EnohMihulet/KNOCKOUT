@@ -13,7 +13,7 @@
 #include <string>
 #include <vector>
 #include "../state.h"
-#include "../helpers/game.h"
+#include "../helpers/uiHelper.h"
 #include "../stateStack.h"
 
 namespace knockOut {

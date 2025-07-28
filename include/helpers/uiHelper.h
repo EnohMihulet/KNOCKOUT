@@ -4,21 +4,8 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/Window/Event.hpp>
-#include <vector>
+
 namespace knockOut {
-
-    const float DESIGN_W = 800.f, DESIGN_H = 600.f;
-
-    enum class StateID {
-        None,
-        MainMenu,
-        SelectOpponent,
-        Circuit,
-        Fight,
-        Options,
-        Result
-    };
-
     struct Button {
         sf::Text text;
         sf::RectangleShape rect;
@@ -37,4 +24,4 @@ namespace knockOut {
             window->draw(text);
         }
     };
-};
+}

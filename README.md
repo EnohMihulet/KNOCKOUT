@@ -1,1 +1,1 @@
-PunchOut style game made so I can learn C++ and basic game programming.
+Punch-Out style game made so I can learn C++ and basic game programming.
