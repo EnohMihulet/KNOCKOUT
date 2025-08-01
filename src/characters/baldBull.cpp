@@ -34,22 +34,7 @@ namespace knockOut {
     }
 
     void BaldBull::handleEvent(const sf::Event& event) {
-        if (event.key.code == sf::Keyboard::Q) {
-            _state = bodyBlock;
-            _animations[_state].play(false);
-        } if (event.key.code == sf::Keyboard::E) {
-            _state = rJab;
-            _animations[_state].play(false);
-        } if (event.key.code == sf::Keyboard::R) {
-            _state = rHook;
-            _animations[_state].play(false);
-        } if (event.key.code == sf::Keyboard::T) {
-            _state = upperCut;
-            _animations[_state].play(false);
-        } if (event.key.code == sf::Keyboard::Y) {
-            _state = celebrate;
-            _animations[_state].play(true);
-        }
+        if (event.type == sf::Event::KeyPressed) return;
     }
 
     void BaldBull::update(const sf::Time dt) {
@@ -60,5 +45,9 @@ namespace knockOut {
         _animations[_state].update();
         _sprite.setTextureRect(_animations[_state].frame());
         if (dt.asMicroseconds() > 0) return;
+    }
+
+    void BaldBull::chooseNextAction() {
+        return;
     }
 }

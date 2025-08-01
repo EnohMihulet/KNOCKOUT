@@ -18,13 +18,25 @@ namespace knockOut {
     }
 
     void FightState::update(const sf::Time dt) {
-        _opponent->update(dt);
-        _player.update(dt);
+    _player.update(dt);
+    _opponent->update(dt);
+
+    if (_player.isPunching()) {
+        if (_player.getHitBox().intersects(_opponent->drawnBounds()) 
+            && _opponent->isVulnerable()) {
+            _opponent->takeHit();
+        }
     }
+
+    if (!_opponent->isInAnimation()) {
+        _opponent->chooseNextAction();
+    }
+}
 
     void FightState::draw() {
         _context.window->draw(_background);
         _opponent->draw();
         _player.draw();
     }
+    
 }

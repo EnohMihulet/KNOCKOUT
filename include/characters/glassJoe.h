@@ -21,6 +21,7 @@ namespace knockOut {
         
     private:    
         void loadLookupTable() override;
+        void chooseNextAction() override;
     };
 
-}
+} 

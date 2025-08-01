@@ -13,29 +13,22 @@ namespace knockOut {
     }
     
     void StateStack::handleEvent(const sf::Event& event) {
-        // Iterate from top to bottom, stop at first state that handles the event
         for (auto itr = _stack.rbegin(); itr != _stack.rend(); ++itr) {
             (*itr)->handleEvent(event);
-            // You might want to add a return value to handleEvent to determine
-            // if the event was consumed and should stop propagating
         }
         
         applyPendingChanges();
     }
     
     void StateStack::update(sf::Time dt) {
-        // Iterate from top to bottom, stop at first state that blocks updates
         for (auto itr = _stack.rbegin(); itr != _stack.rend(); ++itr) {
             (*itr)->update(dt);
-            // You might want to add a return value to update to determine
-            // if lower states should also be updated
         }
         
         applyPendingChanges();
     }
     
     void StateStack::draw() {
-        // Draw from bottom to top
         for (State::Ptr& state : _stack) {
             state->draw();
         }

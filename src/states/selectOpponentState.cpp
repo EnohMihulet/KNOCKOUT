@@ -127,7 +127,7 @@ namespace knockOut {
                 else {
                     
                     requestClear();
-                    *_context.selectedOpponent = (CharacterType) (_selectedIndex + 1);
+                    *_context.selectedOpponent = CharacterType::GlassJoe;
                     requestPush(StateID::Fight);
                 }
             }
@@ -155,7 +155,7 @@ namespace knockOut {
 
                 if (b.isClicked(_context.window, event)) {
                     requestClear();
-                    *_context.selectedOpponent = (CharacterType) (_selectedIndex + 1);
+                    *_context.selectedOpponent = CharacterType::GlassJoe;
                     requestPush(StateID::Fight);
                 }
             }

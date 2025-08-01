@@ -6,7 +6,7 @@
 #include "../../include/characters/player.h"
 #include "../../include/game.h"
 
-namespace knockOut {
+namespace knockOut { 
 
     Player::Player(State::Context context) 
     : _context(context) {
@@ -72,5 +72,24 @@ namespace knockOut {
 
     void Player::draw() {
         _context.window->draw(_playerSprite);
+    }
+
+    sf::FloatRect Player::getHitBox() const { return _playerSprite.getGlobalBounds(); }
+
+    bool Player::isPunching() const {
+        return _state == CharacterState::rJab ||
+            _state == CharacterState::lHook ||
+            _state == CharacterState::rHook ||
+            _state == CharacterState::upperCut;
+    }
+
+    int Player::getDamage() const {
+        switch(_state) {
+        case CharacterState::rJab: return 1;
+        case CharacterState::lHook:
+        case CharacterState::rHook: return 2;
+        case CharacterState::upperCut: return 3;
+        default: return 0;
+        }
     }
 };

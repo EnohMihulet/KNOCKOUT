@@ -16,6 +16,7 @@ namespace knockOut {
         void handleEvent(const sf::Event& event) override;
         void update(const sf::Time dt) override;
         void draw() {_context.window->draw(_sprite); }
+        void chooseNextAction() override;
         
     private:    
         void loadLookupTable() override;

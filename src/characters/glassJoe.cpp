@@ -5,16 +5,18 @@
 #include <SFML/Window/Keyboard.hpp>
 #include <cstdlib>
 
-namespace knockOut {
+namespace knockOut { 
 
     GlassJoe::GlassJoe(State::Context context) 
     : Opponent(context) {
         _sprite.setTexture(context.textures->get(TextureID::GlassJoe));
         loadLookupTable();
         _state = CharacterState::idle;
-        _animations[(int) _state].play(true);
+        _animations[(int) _state].play(false);
         _sprite.setScale({2,2});
         _sprite.setPosition(GLASS_JOE_START_POS);
+
+        std::srand(static_cast<unsigned>(std::time(nullptr)));
     }
 
     void GlassJoe::loadLookupTable() {
@@ -34,61 +36,53 @@ namespace knockOut {
     }
 
     void GlassJoe::handleEvent(const sf::Event& event) {
-        if (event.key.code == sf::Keyboard::Q) {
-            _state = taunt;
-            _animations[_state].play(false);
-        } if (event.key.code == sf::Keyboard::E) {
-            _state = bDodge;
-            _animations[_state].play(false);
-        } if (event.key.code == sf::Keyboard::R) {
-            _state = lDodge;
-            _animations[_state].play(false);
-        } if (event.key.code == sf::Keyboard::T) {
-            _state = rDodge;
-            _animations[_state].play(false);
-        } if (event.key.code == sf::Keyboard::Y) {
-            _state = duck;
-            _animations[_state].play(false);
-        }
+        if (event.type == sf::Event::KeyPressed) return;
     }
 
     void GlassJoe::update(const sf::Time dt) {
-        
-        bool animation_ended = _animations[_state].playing == false;
+        auto& anim = _animations[(int)_state];
+        anim.update();
+        _sprite.setTextureRect(anim.frame());
 
-        if (!animation_ended) {
-            _animations[_state].update();
-            _sprite.setTextureRect(_animations[_state].frame());
+        if (anim.playing)
+            return;
+
+        if (_state == CharacterState::bodyHit) {
+            _state = CharacterState::idle;
+            _animations[(int)_state].play(false);
             return;
         }
 
-        srand(time(0));
-        int random = rand() % 5;
-
-        switch (random) {
-            case 0:
-                _state = idle;
-                break;
-            case 1:
-                _state = taunt;
-                break;
-            case 2:
-                _state = rJab;
-                break;
-            case 3:
-                _state = rHook;
-                break;
-            case 4:
-                _state = upperCut;
-                break;
-            default:
-                _state = idle;
+        int r = std::rand() % 100;
+        if (r < 20) {
+            _state = CharacterState::taunt;
+        } else if (r < 40) {
+            _state = CharacterState::rJab;
+        } else if (r < 60) {
+            _state = CharacterState::rHook;
+        } else if (r < 80) {
+            _state = CharacterState::upperCut;
+        } else {
+            _state = CharacterState::idle;
         }
-        
-        _animations[_state].play(false);
-        _animations[_state].update();
-        _sprite.setTextureRect(_animations[_state].frame());
 
-        if (dt.asMicroseconds() > 0) return;
+        _animations[(int)_state].play(false);
+        _sprite.setTextureRect(_animations[(int)_state].frame());
+        if (dt.asSeconds() > 0) return;
     }
+
+    void GlassJoe::chooseNextAction() {
+        if (_state == CharacterState::bodyHit && !_animations[(int)_state].playing) {
+            _state = CharacterState::idle;
+            _animations[(int)_state].play(true);
+            return;
+        }
+        int r = rand() % 100;
+        if (r < 60)       _state = CharacterState::rJab;
+        else if (r < 80)  _state = CharacterState::rHook;
+        else if (r < 90)  _state = CharacterState::upperCut;
+        else              _state = CharacterState::taunt;
+        _animations[(int)_state].play(false);
+    }
+
 }

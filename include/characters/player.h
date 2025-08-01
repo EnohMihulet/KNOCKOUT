@@ -15,11 +15,11 @@
 #include "../state.h"
 #include "../helpers/characterDataManager.h"
 
-namespace knockOut {
+namespace knockOut { 
 
     const int SHEET_COLS = 9;
     const int SHEET_ROWS = 3;
-    const sf::Vector2f PLAYER_START_POS = { 350, 350};
+    const sf::Vector2f PLAYER_START_POS = { 350, 300};
     const sf::Time INPUT_COOLDOWN_TIME = sf::seconds(.05f);
 
     static const std::map<sf::Keyboard::Key, CharacterState> INPUT_STATE_MAP = {
@@ -71,6 +71,10 @@ namespace knockOut {
         void handleEvent(const sf::Event& event);
         void update(const sf::Time dt);
         void draw();
+        
+        sf::FloatRect getHitBox() const;
+        bool isPunching() const;
+        int getDamage() const;
 
     private:
         sf::Sprite _playerSprite;
@@ -83,4 +87,5 @@ namespace knockOut {
 
         void loadLookupTable();
     };
+
 }
